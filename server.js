@@ -1,12 +1,8 @@
 const express = require("express")
 require('dotenv').config({path : './envFolder/.env'})
-// const mongoclient = require("mongodb").MongoClient
-// const ObjectId = require("mongodb").ObjectId
 const mongoose = require("mongoose")
 const cors = require("cors")
-var bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-// const bcrypt = require('bcrypt')
 
 const app = express()
 
@@ -15,40 +11,10 @@ app.use(express.json())
 app.use(express.urlencoded({ extended : true }))
 app.use(cookieParser())
 app.use('/', require('./routes/userRoutes'))
+
 // var conn_str = "mongodb://127.0.0.1:27017";
 // var database;
 // const jwt = require('jsonwebtoken')
-
-const User = require('./models/userModel')
-
-// app.post('/login', async (req, res) => {
-
-//     const { email, password } = req.body;
-//     // const foundUser = await User.findOne({ email: email })
-
-//     // if(foundUser){
-
-//     //     const ismatch = await bcrypt.compare(password,foundUser.password);
-//     //     if(!ismatch){
-//     //         res.status(400).json({ error: "INVALID CREDENTIALS"})
-//     //     }
-//     //     else{
-//     //         const token = await foundUser.generateAuthToken();
-//     //         await foundUser.save()
-
-//     //         res.cookie("accessToken",token,{
-//     //             httpOnly:true
-//     //         })
-
-//             //res.json({message:"User login successful"});
-//     //     }
-
-//     // }
-//     // else{
-//         // res.status(400).json({ error: "INVALID CREDENTIALS"})
-
-//     // }
-// })
 
 
 // app.get('/addupvote', (req, res) => {

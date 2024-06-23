@@ -1,8 +1,7 @@
 const bcrypt = require('bcrypt')
 const User = require('../models/userModel')
-// const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 // const uuid = require('uuid')
-// const { sendVerMail } = require('../middleware/emailVerify')
 // const { mongoose } = require('mongoose')
 
 exports.signupUser = async (req,res,next) => {
@@ -31,4 +30,42 @@ exports.signupUser = async (req,res,next) => {
     } catch(err) {
         next(err)
     }
+}
+
+exports.loginUser = async (req,res,next) => {
+    let { email, password } = req.body
+    let user = await User.findOne({"email" : email})
+    if(!user){
+        return res.status(400).send('User not found')
+    }
+    else{
+        if(!user.isVerified){
+            return res.status(400).send('Verify your Email to continue')
+        }
+
+        bcrypt.compare(password,user.password)
+        .then( async (isPswdMatched) => {
+            if (isPswdMatched) {
+                // creating and storing and checking expiry date of token
+                let jwtToken = jwt.sign({"email" : user.email},process.env.SECRET,{"expiresIn" : "1d"})
+                // updating old tokens
+                user.updateTokens(1,jwtToken)
+                res.cookie('jwtToken',jwtToken,{httpOnly:true, expires:new Date(Date.now() + 24*60*60*1000)})
+                res.cookie('name',user.name,{httpOnly:true, expires:new Date(Date.now() + 24*60*60*1000)})
+                res.json({jwtToken})
+            } else {
+                res.status(400).send('Invalid password')
+            }
+        })
+        .catch(err => next(err))
+    }
+}
+
+exports.userLogout = async (req,res) => {
+    let user = req.user
+    await user.updateTokens(0,req.curJwt)
+    res.clearCookie('jwtToken')
+    res.clearCookie('name')
+    res.clearCookie('email')
+    res.send('User Logged Out')
 }
