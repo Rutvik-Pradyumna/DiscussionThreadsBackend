@@ -10,7 +10,7 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended : true }))
 app.use(cookieParser())
-app.use('/', require('./routes/userRoutes'))
+app.use('/api', require('./routes/userRoutes'))
 
 // var conn_str = "mongodb://127.0.0.1:27017";
 // var database;

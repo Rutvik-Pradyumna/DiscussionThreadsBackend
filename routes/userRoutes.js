@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-const {signupUser,loginUser,userLogout} = require('../controllers/userControllers')
+const {signupUser,loginUser,userLogout,postQuestion} = require('../controllers/userControllers')
 const {verificationMailer,verifyUser} = require('../middleware/mail')
 const {userAuthCheck} = require('../middleware/userAuth')
 
@@ -19,5 +19,8 @@ router.route('/protected')
 
 router.route('/logout')
 .get(userAuthCheck,userLogout)
+
+router.route('/addQuestion')
+.post(userAuthCheck,postQuestion)
 
 module.exports = router

@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt')
 const User = require('../models/userModel')
+const Question = require('../models/questionModel')
 const jwt = require('jsonwebtoken')
 // const uuid = require('uuid')
 // const { mongoose } = require('mongoose')
@@ -50,8 +51,8 @@ exports.loginUser = async (req,res,next) => {
                 let jwtToken = jwt.sign({"email" : user.email},process.env.SECRET,{"expiresIn" : "1d"})
                 // updating old tokens
                 user.updateTokens(1,jwtToken)
-                res.cookie('jwtToken',jwtToken,{httpOnly:true, expires:new Date(Date.now() + 24*60*60*1000)})
-                res.cookie('name',user.name,{httpOnly:true, expires:new Date(Date.now() + 24*60*60*1000)})
+                res.cookie('jwtToken',jwtToken,{expires:new Date(Date.now() + 24*60*60*1000)})
+                res.cookie('name',user.name,{expires:new Date(Date.now() + 24*60*60*1000)})
                 res.json({jwtToken})
             } else {
                 res.status(400).send('Invalid password')
@@ -68,4 +69,24 @@ exports.userLogout = async (req,res) => {
     res.clearCookie('name')
     res.clearCookie('email')
     res.send('User Logged Out')
+}
+
+exports.postQuestion = async (req,res) => {
+    let newQuestion = new Question({
+        "byWhom" : req.body.byWhom,
+        "question" : req.body.question,
+        "filters" : req.body.filters,
+        "branchFilter" : req.body.branchFilter,
+        "answer" : req.body.answer,
+        "visits" : req.body.visits,
+        "time" : req.body.time
+    })
+
+    try{
+        await newQuestion.save()
+        res.send("Question Stored Succesfully")
+    }
+    catch (err) {
+        res.status(400).send("Error storing data")
+    }
 }
