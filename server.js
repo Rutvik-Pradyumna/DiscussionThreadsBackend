@@ -12,11 +12,6 @@ app.use(express.urlencoded({ extended : true }))
 app.use(cookieParser())
 app.use('/api', require('./routes/userRoutes'))
 
-// var conn_str = "mongodb://127.0.0.1:27017";
-// var database;
-// const jwt = require('jsonwebtoken')
-
-
 // app.get('/addupvote', (req, res) => {
 //     console.log(req.query)
     
@@ -160,53 +155,6 @@ app.use('/api', require('./routes/userRoutes'))
 //             })    
 //         })
 //     })
-// })
-
-// app.post('/', (req, res) => {
-
-//     // console.log('request comming')
-
-//     if (Object.keys(req.body.qfilter).length != 0) {
-//         if (req.body.qfilter['_id'] != undefined) {
-//             req.body.qfilter['_id'] = ObjectId(req.body.qfilter['_id'])
-//         }
-//         if (req.body.qfilter['question'] != undefined) {
-//             req.body.qfilter['question'] = new RegExp(req.body.qfilter['question'], 'i')
-//         }
-//     }
-
-//     // console.log(req.body.qfilter)
-//     // console.log(req.body.arrange)
-
-//     database.collection("Qtable").find(req.body.qfilter).sort(req.body.arrange).toArray((err1, answer1) => {
-//         database.collection("Accounts").find(req.body.filter).toArray((err2, answer2) => {
-//             // console.log(`__ ${answer1} __`)
-//             // console.log(answer1)
-//             let answer = []
-//             for (let i = 0; i < answer1.length; i++) {
-//                 for (let j = 0; j < answer2.length; j++) {
-//                     if (answer1[i].bywhom == answer2[j]._id) {
-//                         let a1 = { ...answer1[i] }
-//                         let a2 = { ...answer2[j] }
-//                         a1._qid = a1._id
-//                         a2._pid = a2._id
-//                         delete a1._id
-//                         delete a2._id
-//                         answer.push({ ...a1, ...a2 })
-//                         break
-//                     }
-//                 }
-//             }
-//             // console.log(answer)
-//             // console.log('_____________')
-//             res.send(answer)
-//         })
-//     })
-// })
-
-// app.post('/addquestion', (req, res) => {
-//     // console.log(req.body)
-//     database.collection('Qtable').insertOne(req.body)
 // })
 
 // app.post('/addans', (req, res) => {

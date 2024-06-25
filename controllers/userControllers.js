@@ -2,8 +2,6 @@ const bcrypt = require('bcrypt')
 const User = require('../models/userModel')
 const Question = require('../models/questionModel')
 const jwt = require('jsonwebtoken')
-// const uuid = require('uuid')
-// const { mongoose } = require('mongoose')
 
 exports.signupUser = async (req,res,next) => {
     try{
@@ -77,7 +75,7 @@ exports.postQuestion = async (req,res) => {
         "question" : req.body.question,
         "filters" : req.body.filters,
         "branchFilter" : req.body.branchFilter,
-        "answer" : req.body.answer,
+        "answers" : req.body.answers,
         "visits" : req.body.visits,
         "time" : req.body.time
     })
@@ -89,4 +87,53 @@ exports.postQuestion = async (req,res) => {
     catch (err) {
         res.status(400).send("Error storing data")
     }
+}
+
+exports.getThreads = async (req,res) => {
+    let data
+    if(req.body.arrange.length===0)
+        data = await Question.find()
+    else{
+        let field,order
+        let arrange = req.body.arrange[0]
+        if(arrange==="Latest"){
+            field = "time"
+            order = "desc"
+        } else if (arrange==="Oldest"){
+            field = "time"
+            order = "asc"
+        } else if (arrange==="MostAnswered"){
+            field = "answers"
+            order = "desc"
+        } else if (arrange==="LeastAnswered"){
+            field = "time"
+            order = "asc"
+        } else if (arrange==="MostVisits"){
+            field = "visits"
+            order = "desc"
+        } else if (arrange==="LeastVisits"){
+            field = "time"
+            order = "asc"
+        }
+        const sortOrder = order === 'asc' ? 1 : -1
+        data = await Question.find().sort({ [field]: sortOrder })
+    }
+    
+    if(req.body.branchFilter.length===0 & req.body.filter.length===0)
+        res.send(data)
+    
+    let threads = []
+    for(eachQues of data){
+        if(req.body.branchFilter.includes(eachQues.branchFilter)){
+            threads.push(eachQues)
+            continue
+        }
+        for(field of eachQues.filters){
+            if(req.body.filter.includes(field)){
+                threads.push(eachQues)
+                break
+            }
+        }
+    }
+    res.send(threads)
 }

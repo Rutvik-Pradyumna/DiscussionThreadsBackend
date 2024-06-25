@@ -1,7 +1,12 @@
 const express = require('express')
 const router = express.Router()
 
-const {signupUser,loginUser,userLogout,postQuestion} = require('../controllers/userControllers')
+const { signupUser,
+        loginUser,
+        userLogout,
+        postQuestion,
+        getThreads
+    } = require('../controllers/userControllers')
 const {verificationMailer,verifyUser} = require('../middleware/mail')
 const {userAuthCheck} = require('../middleware/userAuth')
 
@@ -22,5 +27,8 @@ router.route('/logout')
 
 router.route('/addQuestion')
 .post(userAuthCheck,postQuestion)
+
+router.route('/getThreads')
+.get(userAuthCheck,getThreads)
 
 module.exports = router
