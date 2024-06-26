@@ -120,8 +120,8 @@ exports.getThreads = async (req,res) => {
     }
     
     if(req.body.branchFilter.length===0 & req.body.filter.length===0)
-        res.send(data)
-    
+        return res.send(data)
+
     let threads = []
     for(eachQues of data){
         if(req.body.branchFilter.includes(eachQues.branchFilter)){
@@ -136,4 +136,14 @@ exports.getThreads = async (req,res) => {
         }
     }
     res.send(threads)
+}
+
+exports.viewQuestion = async (req,res) => {
+    let question = await Question.findOneAndUpdate(
+        { _id : req.query._id },
+        { $inc: { visits : 1 } },
+        { new: true }   
+    )
+    if(!question) return res.status(400).send('Invalid Id')
+    res.send(question)
 }
