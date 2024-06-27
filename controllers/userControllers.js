@@ -106,13 +106,13 @@ exports.getThreads = async (req,res) => {
             field = "answers"
             order = "desc"
         } else if (arrange==="LeastAnswered"){
-            field = "time"
+            field = "answers"
             order = "asc"
         } else if (arrange==="MostVisits"){
             field = "visits"
             order = "desc"
         } else if (arrange==="LeastVisits"){
-            field = "time"
+            field = "visits"
             order = "asc"
         }
         const sortOrder = order === 'asc' ? 1 : -1
@@ -146,4 +146,15 @@ exports.viewQuestion = async (req,res) => {
     )
     if(!question) return res.status(400).send('Invalid Id')
     res.send(question)
+}
+
+exports.searchThreads = async (req,res) => {
+    const searchVal = req.query.searchVal.toLowerCase()
+    const data = await Question.find()
+    let finalData = []
+    for(eachQuestion of data){
+        if(eachQuestion.question.toLowerCase().includes(searchVal))
+            finalData.push(eachQuestion)
+    }
+    res.send(finalData)
 }
