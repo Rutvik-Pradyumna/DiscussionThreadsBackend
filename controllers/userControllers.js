@@ -158,3 +158,14 @@ exports.searchThreads = async (req,res) => {
     }
     res.send(finalData)
 }
+
+exports.getProfile = async (req,res) => {
+    const {username} = req.query
+    const user = await User.find({name:username})
+    const questions = await Question.find({byWhom:username})
+    const userInfo={
+        userInfo : user,
+        userQuestions : questions
+    }
+    res.send(userInfo)
+}
