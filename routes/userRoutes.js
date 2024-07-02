@@ -9,7 +9,8 @@ const { signupUser,
         viewQuestion,
         searchThreads,
         getProfile,
-        addAns
+        addAns,
+        addView
     } = require('../controllers/userControllers')
 const {verificationMailer,verifyUser} = require('../middleware/mail')
 const {userAuthCheck} = require('../middleware/userAuth')
@@ -36,7 +37,10 @@ router.route('/getThreads')
 .post(userAuthCheck,getThreads)
 
 router.route('/viewQuestion')
-.put(userAuthCheck,viewQuestion)
+.get(userAuthCheck,viewQuestion)
+
+router.route('/addView')
+.put(userAuthCheck,addView)
 
 router.route('/searchThreads')
 .get(userAuthCheck,searchThreads)

@@ -140,16 +140,23 @@ exports.getThreads = async (req,res) => {
 }
 
 exports.viewQuestion = async (req,res) => {
-    let question = await Question.findOneAndUpdate(
-        { _id : req.query._id },
-        { $inc: { visits : 1 } },
-        { new: true }   
+    let question = await Question.findOne(
+        { _id : req.query._id }
     ).populate('answers')
     if(!question) return res.status(400).send('Invalid Id')
     let {answers} = question
     let sortedAnswers = answers.sort((a, b) => b.upvotes - a.upvotes)
     question.answers = sortedAnswers
     res.send(question)
+}
+
+exports.addView = async (req,res) => {
+    let question = await Question.findOneAndUpdate(
+        { _id : req.query._id },
+        { $inc: { visits : 1 } },
+        { new: true }   
+    )
+    res.send("success")
 }
 
 exports.searchThreads = async (req,res) => {
