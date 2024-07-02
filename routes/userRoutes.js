@@ -8,7 +8,8 @@ const { signupUser,
         getThreads,
         viewQuestion,
         searchThreads,
-        getProfile
+        getProfile,
+        addAns
     } = require('../controllers/userControllers')
 const {verificationMailer,verifyUser} = require('../middleware/mail')
 const {userAuthCheck} = require('../middleware/userAuth')
@@ -42,5 +43,8 @@ router.route('/searchThreads')
 
 router.route('/getProfile')
 .get(userAuthCheck,getProfile)
+
+router.route('/addAns')
+.post(userAuthCheck,addAns)
 
 module.exports = router

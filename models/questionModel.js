@@ -21,7 +21,11 @@ const questionSchema = new mongoose.Schema({
     },
     time : {
         type : String
-    }
+    },
+    answers : [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'Answer'
+    }]
 })
 
 module.exports = mongoose.model('Question',questionSchema)

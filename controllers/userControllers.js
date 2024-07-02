@@ -1,7 +1,9 @@
 const bcrypt = require('bcrypt')
 const User = require('../models/userModel')
 const Question = require('../models/questionModel')
+const Answer = require('../models/answerModel')
 const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose')
 
 exports.signupUser = async (req,res,next) => {
     try{
@@ -75,7 +77,6 @@ exports.postQuestion = async (req,res) => {
         "question" : req.body.question,
         "filters" : req.body.filters,
         "branchFilter" : req.body.branchFilter,
-        "answers" : req.body.answers,
         "visits" : req.body.visits,
         "time" : req.body.time
     })
@@ -143,8 +144,11 @@ exports.viewQuestion = async (req,res) => {
         { _id : req.query._id },
         { $inc: { visits : 1 } },
         { new: true }   
-    )
+    ).populate('answers')
     if(!question) return res.status(400).send('Invalid Id')
+    let {answers} = question
+    let sortedAnswers = answers.sort((a, b) => b.upvotes - a.upvotes)
+    question.answers = sortedAnswers
     res.send(question)
 }
 
@@ -168,4 +172,22 @@ exports.getProfile = async (req,res) => {
         userQuestions : questions
     }
     res.send(userInfo)
+}
+
+exports.addAns = async (req,res) => {
+    let answer = await Answer.create({
+        byWhom : req.body.byWhom,
+        description : req.body.answer,
+        upvotes : 0,
+        downvotes : 0,
+        time : req.body.time
+    })
+
+    await Question.updateOne(
+        { _id : req.body.toquestion},
+        { $push : { answers : new mongoose.Types.ObjectId(answer._id) } },
+        { upsert : false, new : true }
+    )
+
+    res.send("Answer added successfully")
 }
