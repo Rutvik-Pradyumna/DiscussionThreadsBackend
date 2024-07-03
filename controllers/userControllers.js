@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt')
 const User = require('../models/userModel')
 const Question = require('../models/questionModel')
 const Answer = require('../models/answerModel')
+const Reaction = require('../models/reactionsModel')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 
@@ -147,7 +148,12 @@ exports.viewQuestion = async (req,res) => {
     let {answers} = question
     let sortedAnswers = answers.sort((a, b) => b.upvotes - a.upvotes)
     question.answers = sortedAnswers
-    res.send(question)
+
+    let questionObject = question.toObject();
+    let reactions = await Reaction.find({username : req.user.name})
+    questionObject.reactions = reactions
+
+    res.send(questionObject)
 }
 
 exports.addView = async (req,res) => {
@@ -197,4 +203,41 @@ exports.addAns = async (req,res) => {
     )
 
     res.send("Answer added successfully")
+}
+
+exports.addReaction = async (req,res) => {
+    const {name} = req.user 
+    const {_id} = req.query
+    const {upvote, downvote} = req.body
+    let upVoteChange=0
+    let downVoteChange=0
+
+    let reaction = await Reaction.findOne({username : name, answerId : _id})
+    if(reaction){
+        upVoteChange = upvote-reaction.upvote
+        downVoteChange = downvote-reaction.downvote
+        await Reaction.findOneAndUpdate(
+            {username : name, answerId : _id},
+            {$set : {upvote:upvote, downvote:downvote}},
+            { new: true, runValidators: true }
+        )
+    }
+    else{
+        reaction = await Reaction.create({
+            username : name,
+            answerId : _id,
+            upvote : upvote,
+            downvote : downvote
+        })
+        upVoteChange = upvote-0
+        downVoteChange = downvote-0
+    }
+    
+    const updatedAnswer = await Answer.findOneAndUpdate(
+        { _id : _id},
+        { $inc : {upvotes : upVoteChange, downvotes : downVoteChange}},
+        { new: true, runValidators: true }
+    )
+
+    res.send(updatedAnswer)
 }

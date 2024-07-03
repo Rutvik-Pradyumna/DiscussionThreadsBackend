@@ -10,7 +10,8 @@ const { signupUser,
         searchThreads,
         getProfile,
         addAns,
-        addView
+        addView,
+        addReaction
     } = require('../controllers/userControllers')
 const {verificationMailer,verifyUser} = require('../middleware/mail')
 const {userAuthCheck} = require('../middleware/userAuth')
@@ -50,5 +51,8 @@ router.route('/getProfile')
 
 router.route('/addAns')
 .post(userAuthCheck,addAns)
+
+router.route('/reaction')
+.put(userAuthCheck,addReaction)
 
 module.exports = router
