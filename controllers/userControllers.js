@@ -146,10 +146,12 @@ exports.viewQuestion = async (req,res) => {
     ).populate('answers')
     if(!question) return res.status(400).send('Invalid Id')
     let {answers} = question
-    let sortedAnswers = answers.sort((a, b) => b.upvotes - a.upvotes)
+    let sortedAnswers = answers.sort((a, b) => {
+        return b.upvotes === a.upvotes ? a.downvotes-b.downvotes : b.upvotes-a.upvotes
+    })
     question.answers = sortedAnswers
 
-    let questionObject = question.toObject();
+    let questionObject = question.toObject()
     let reactions = await Reaction.find({username : req.user.name})
     questionObject.reactions = reactions
 
@@ -240,4 +242,9 @@ exports.addReaction = async (req,res) => {
     )
 
     res.send(updatedAnswer)
+}
+
+exports.deleteThread = async (req,res) => {
+    await Question.findOneAndDelete({_id : req.query._id})
+    res.send("success")
 }
