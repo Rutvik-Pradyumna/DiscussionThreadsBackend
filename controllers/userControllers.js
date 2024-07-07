@@ -5,6 +5,7 @@ const Answer = require('../models/answerModel')
 const Reaction = require('../models/reactionsModel')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
+const axios = require('axios')
 
 exports.signupUser = async (req,res,next) => {
     try{
@@ -73,6 +74,13 @@ exports.userLogout = async (req,res) => {
 }
 
 exports.postQuestion = async (req,res) => {
+    try{
+        const response = await axios.post('http://127.0.0.1:7000/classify',{text : req.body.question})
+        if(response.data[0].label==='hate') return res.status(400).send("Hate Speech")
+    } catch (err) {
+        return res.status(400).send(err)
+    }
+
     let newQuestion = new Question({
         "byWhom" : req.body.byWhom,
         "question" : req.body.question,
@@ -190,6 +198,13 @@ exports.getProfile = async (req,res) => {
 }
 
 exports.addAns = async (req,res) => {
+    try{
+        const response = await axios.post('http://127.0.0.1:7000/classify',{text : req.body.answer})
+        if(response.data[0].label==='hate') return res.status(400).send("Hate Speech")
+    } catch (err) {
+        return res.status(400).send(err)
+    }
+
     let answer = await Answer.create({
         byWhom : req.body.byWhom,
         description : req.body.answer,
