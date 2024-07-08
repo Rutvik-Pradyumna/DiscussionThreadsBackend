@@ -14,7 +14,7 @@ exports.verificationMailer = (req,res,next) => {
         from : process.env.MAIL_ID,
         to : email,
         subject : 'Verify Your Mail for DiscussionThreads',
-        html : `<a href="http://localhost:5000/verify?userId=${_id}">Click here to verify</a>`
+        html : `<a href="http://localhost:5000/api/verify?userId=${_id}">Click here to verify</a>`
     }
     transporter.sendMail(mailOptions)
     .then( info => console.log(info.response))
